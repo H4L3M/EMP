@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
 
         val playNext = findViewById<Button>(R.id.play_next)
         val playerView = findViewById<StyledPlayerView>(R.id.player_view)
-        emp = Emp.with(this).init(playerView)
+        emp = Emp.get().init(this, playerView)
 
         playNext.setOnClickListener {
             position++
@@ -44,9 +44,23 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        emp.release()
+        emp.pause()
     }
 
+    override fun onStop() {
+        super.onStop()
+        emp.stop()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        emp.resume()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        emp.destroy()
+    }
     companion object {
         private const val TAG = "MainActivity"
     }

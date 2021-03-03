@@ -1,6 +1,5 @@
 package com.mowakib.emp;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -46,7 +45,7 @@ import java.util.Map;
 import static com.google.android.exoplayer2.util.Assertions.checkNotNull;
 
 
-public final class Emp {
+public class Emp {
 
     // Saved instance state keys.
 
@@ -54,9 +53,6 @@ public final class Emp {
     private static final String KEY_WINDOW = "window";
     private static final String KEY_POSITION = "position";
     private static final String KEY_AUTO_PLAY = "auto_play";
-
-    @SuppressLint("StaticFieldLeak")
-    private static Context mContext;
 
     protected StyledPlayerView mPlayerView;
     protected LinearLayout debugRootView;
@@ -81,13 +77,26 @@ public final class Emp {
 
     private String mUrlSource;
 
-    public static Emp with(Context context) {
-        mContext = context.getApplicationContext();
+
+    //----------------------------------------------------------------------------------------------
+
+    private Context mContext;
+    //private static Emp INSTANCE;
+
+    public static synchronized Emp get() {
+
+        //if (INSTANCE == null){
+        //    INSTANCE = new Emp();
+        //}
+        //return INSTANCE;
         return new Emp();
     }
 
+    //----------------------------------------------------------------------------------------------
 
-    public Emp init(@NonNull StyledPlayerView playerView) {
+
+    public Emp init(Context context, StyledPlayerView playerView) {
+        mContext = context;
         mPlayerView = playerView;
 
         dataSourceFactory = DemoUtil.getDataSourceFactory(/* context= */ mContext);
@@ -99,8 +108,9 @@ public final class Emp {
 //
 //    playerView = findViewById(R.id.player_view);
 //        mPlayerView.setControllerVisibilityListener(this);
-        mPlayerView.setErrorMessageProvider(new PlayerErrorMessageProvider());
+        mPlayerView.setErrorMessageProvider(new PlayerErrorMessageProvider(mContext));
         mPlayerView.requestFocus();
+
         return this;
     }
 
@@ -131,51 +141,44 @@ public final class Emp {
 
     public void start() {
         if (Util.SDK_INT > 23) {
-            init(mPlayerView);
+            init(mContext, mPlayerView);
             if (mPlayerView != null) {
                 mPlayerView.onResume();
             }
         }
     }
 
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//        if (Util.SDK_INT <= 23 || player == null) {
-//            initializePlayer();
-//            if (playerView != null) {
-//                playerView.onResume();
-//            }
-//        }
-//    }
 
-//    @Override
-//    public void onPause() {
-//        super.onPause();
-//        if (Util.SDK_INT <= 23) {
-//            if (playerView != null) {
-//                playerView.onPause();
-//            }
-//            releasePlayer();
-//        }
-//    }
+    public void resume() {
+        if (Util.SDK_INT <= 23 || mPlayer == null) {
+            init(mContext, mPlayerView);
+            if (mPlayerView != null) {
+                mPlayerView.onResume();
+            }
+        }
+    }
 
-//    @Override
-//    public void onStop() {
-//        super.onStop();
-//        if (Util.SDK_INT > 23) {
-//            if (playerView != null) {
-//                playerView.onPause();
-//            }
-//            releasePlayer();
-//        }
-//    }
+    public void pause() {
+        if (Util.SDK_INT <= 23) {
+            if (mPlayerView != null) {
+                mPlayerView.onPause();
+            }
+            release();
+        }
+    }
 
-//    @Override
-//    public void onDestroy() {
-//        super.onDestroy();
-//        releaseAdsLoader();
-//    }
+    public void stop() {
+        if (Util.SDK_INT > 23) {
+            if (mPlayerView != null) {
+                mPlayerView.onPause();
+            }
+            release();
+        }
+    }
+
+    public void destroy() {
+        releaseAdsLoader();
+    }
 
 //    @Override
 //    public void onRequestPermissionsResult(
@@ -236,15 +239,6 @@ public final class Emp {
 //        debugRootView.setVisibility(visibility);
 //    }
 
-    // Internal methods
-
-//    protected void setContentView() {
-//        setContentView(R.layout.player_activity);
-//    }
-
-    /**
-     * @return Whether initialization was successful.
-     */
     public Emp load(String url) {
         mUrlSource = url;
 
@@ -472,6 +466,12 @@ public final class Emp {
     }
 
     private static class PlayerErrorMessageProvider implements ErrorMessageProvider<ExoPlaybackException> {
+
+        private final Context mContext;
+
+        public PlayerErrorMessageProvider(Context context) {
+            this.mContext = context;
+        }
 
         @Override
         @NonNull
