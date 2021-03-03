@@ -1,18 +1,18 @@
 package com.mowakib.emp
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
-import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.ui.StyledPlayerView
 
 class MainActivity : AppCompatActivity() {
 
     private val urlSources =
-        listOf(MPD, M3U8, MP3, OGG, MP4_S, MP4, MKV, MPEG_TS, AAC, WEBM, FLAC, FLV)
+        listOf(MPD, M3U8, MP3)
+//        listOf(MPD, M3U8, MP3, OGG, MP4_S, MP4, MKV, MPEG_TS, AAC, WEBM, FLAC, FLV)
 
-    private var position = -1;
+    private var position = -1
 
     private lateinit var emp: Emp
 
@@ -26,10 +26,11 @@ class MainActivity : AppCompatActivity() {
 
         playNext.setOnClickListener {
             position++
-            if (position <= 11) {
+            if (position <= 2) {
                 emp.load(urlSources[position])
             } else {
-                position = 0;
+                position = 0
+                emp.load(urlSources[position])
             }
             Log.d(TAG, "onCreate: Position => $position \n ${urlSources[position]}")
         }
@@ -45,6 +46,9 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
         emp.release()
     }
+
+    companion object {
+        private const val TAG = "MainActivity"
+    }
 }
 
-private const val TAG = "MainActivity"
