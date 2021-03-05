@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.mowakib.emp;
+package com.mowakib.emp.network;
 
 import android.app.Notification;
 import android.content.Context;
@@ -27,19 +27,20 @@ import com.google.android.exoplayer2.offline.DownloadService;
 import com.google.android.exoplayer2.scheduler.PlatformScheduler;
 import com.google.android.exoplayer2.ui.DownloadNotificationHelper;
 import com.google.android.exoplayer2.util.NotificationUtil;
-import com.google.android.exoplayer2.util.Util;
+import com.mowakib.emp.utils.Util;
+import com.mowakib.emp.R;
 
 import java.util.List;
 
-import static com.mowakib.emp.DemoUtil.DOWNLOAD_NOTIFICATION_CHANNEL_ID;
+import static com.mowakib.emp.utils.Util.DOWNLOAD_NOTIFICATION_CHANNEL_ID;
 
 /** A service for downloading media. */
-public class DemoDownloadService extends DownloadService {
+public class EmpDownloadService extends DownloadService {
 
   private static final int JOB_ID = 1;
   private static final int FOREGROUND_NOTIFICATION_ID = 1;
 
-  public DemoDownloadService() {
+  public EmpDownloadService() {
     super(
         FOREGROUND_NOTIFICATION_ID,
         DEFAULT_FOREGROUND_NOTIFICATION_UPDATE_INTERVAL,
@@ -53,9 +54,9 @@ public class DemoDownloadService extends DownloadService {
   protected DownloadManager getDownloadManager() {
     // This will only happen once, because getDownloadManager is guaranteed to be called only once
     // in the life cycle of the process.
-    DownloadManager downloadManager = DemoUtil.getDownloadManager(/* context= */ this);
+    DownloadManager downloadManager = Util.getDownloadManager(/* context= */ this);
     DownloadNotificationHelper downloadNotificationHelper =
-        DemoUtil.getDownloadNotificationHelper(/* context= */ this);
+        Util.getDownloadNotificationHelper(/* context= */ this);
     downloadManager.addListener(
         new TerminalStateNotificationHelper(
             this, downloadNotificationHelper, FOREGROUND_NOTIFICATION_ID + 1));
@@ -64,13 +65,13 @@ public class DemoDownloadService extends DownloadService {
 
   @Override
   protected PlatformScheduler getScheduler() {
-    return Util.SDK_INT >= 21 ? new PlatformScheduler(this, JOB_ID) : null;
+    return com.google.android.exoplayer2.util.Util.SDK_INT >= 21 ? new PlatformScheduler(this, JOB_ID) : null;
   }
 
   @Override
   @NonNull
   protected Notification getForegroundNotification(@NonNull List<Download> downloads) {
-    return DemoUtil.getDownloadNotificationHelper(/* context= */ this)
+    return Util.getDownloadNotificationHelper(/* context= */ this)
         .buildProgressNotification(
             /* context= */ this,
             R.drawable.ic_download,
@@ -82,8 +83,8 @@ public class DemoDownloadService extends DownloadService {
   /**
    * Creates and displays notifications for downloads when they complete or fail.
    *
-   * <p>This helper will outlive the lifespan of a single instance of {@link DemoDownloadService}.
-   * It is static to avoid leaking the first {@link DemoDownloadService} instance.
+   * <p>This helper will outlive the lifespan of a single instance of {@link EmpDownloadService}.
+   * It is static to avoid leaking the first {@link EmpDownloadService} instance.
    */
   private static final class TerminalStateNotificationHelper implements DownloadManager.Listener {
 
@@ -109,14 +110,14 @@ public class DemoDownloadService extends DownloadService {
                 context,
                 R.drawable.ic_download_done,
                 /* contentIntent= */ null,
-                Util.fromUtf8Bytes(download.request.data));
+                com.google.android.exoplayer2.util.Util.fromUtf8Bytes(download.request.data));
       } else if (download.state == Download.STATE_FAILED) {
         notification =
             notificationHelper.buildDownloadFailedNotification(
                 context,
                 R.drawable.ic_download_done,
                 /* contentIntent= */ null,
-                Util.fromUtf8Bytes(download.request.data));
+                com.google.android.exoplayer2.util.Util.fromUtf8Bytes(download.request.data));
       } else {
         return;
       }

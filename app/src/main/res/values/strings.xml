@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">EMP</string>
     <string name="play_next">Play Next</string>
+    <string name="notification_channel" />
+    <string name="notification_channel_description" />
+    <string name="channelName">channel name</string>
+    <string name="channelDescription">channel desc</string>
 </resources>

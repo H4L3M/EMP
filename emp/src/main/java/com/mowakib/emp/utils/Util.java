@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.mowakib.emp;
+package com.mowakib.emp.utils;
 
 import android.content.Context;
 import android.os.Build;
@@ -38,6 +38,7 @@ import com.google.android.exoplayer2.upstream.cache.CacheDataSource;
 import com.google.android.exoplayer2.upstream.cache.NoOpCacheEvictor;
 import com.google.android.exoplayer2.upstream.cache.SimpleCache;
 import com.google.android.exoplayer2.util.Log;
+import com.mowakib.emp.network.EmpDownloadTracker;
 
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
@@ -49,7 +50,7 @@ import java.net.CookiePolicy;
 import java.util.concurrent.Executors;
 
 /** Utility methods for the demo app. */
-public final class DemoUtil {
+public final class Util {
 
   public static final String DOWNLOAD_NOTIFICATION_CHANNEL_ID = "download_channel";
 
@@ -80,7 +81,7 @@ public final class DemoUtil {
   private static @MonotonicNonNull File downloadDirectory;
   private static @MonotonicNonNull Cache downloadCache;
   private static @MonotonicNonNull DownloadManager downloadManager;
-  private static @MonotonicNonNull DownloadTracker downloadTracker;
+  private static @MonotonicNonNull EmpDownloadTracker downloadTracker;
   private static @MonotonicNonNull DownloadNotificationHelper downloadNotificationHelper;
 
   /** Returns whether extension renderers should be used. */
@@ -145,7 +146,7 @@ public final class DemoUtil {
     return downloadManager;
   }
 
-  public static synchronized DownloadTracker getDownloadTracker(Context context) {
+  public static synchronized EmpDownloadTracker getDownloadTracker(Context context) {
     ensureDownloadManagerInitialized(context);
     return downloadTracker;
   }
@@ -179,7 +180,7 @@ public final class DemoUtil {
               getHttpDataSourceFactory(context),
               Executors.newFixedThreadPool(/* nThreads= */ 6));
       downloadTracker =
-          new DownloadTracker(context, getHttpDataSourceFactory(context), downloadManager);
+          new EmpDownloadTracker(context, getHttpDataSourceFactory(context), downloadManager);
     }
   }
 
@@ -226,5 +227,5 @@ public final class DemoUtil {
         .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR);
   }
 
-  private DemoUtil() {}
+  private Util() {}
 }

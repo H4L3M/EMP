@@ -1,4 +1,4 @@
-package com.mowakib.emp;
+package com.mowakib.emp.network;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -33,6 +33,9 @@ import com.google.android.exoplayer2.trackselection.MappingTrackSelector.MappedT
 import com.google.android.exoplayer2.upstream.HttpDataSource;
 import com.google.android.exoplayer2.util.Log;
 import com.google.android.exoplayer2.util.Util;
+import com.mowakib.emp.R;
+import com.mowakib.emp.TrackSelectionDialog;
+import com.mowakib.emp.network.EmpDownloadService;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -42,7 +45,7 @@ import static com.google.android.exoplayer2.util.Assertions.checkNotNull;
 import static com.google.android.exoplayer2.util.Assertions.checkStateNotNull;
 
 /** Tracks media that has been downloaded. */
-public class DownloadTracker {
+public class EmpDownloadTracker {
 
   /** Listens for changes in the tracked downloads. */
   public interface Listener {
@@ -62,7 +65,7 @@ public class DownloadTracker {
 
   @Nullable private StartDownloadDialogHelper startDownloadDialogHelper;
 
-  public DownloadTracker(
+  public EmpDownloadTracker(
       Context context,
       HttpDataSource.Factory httpDataSourceFactory,
       DownloadManager downloadManager) {
@@ -101,7 +104,7 @@ public class DownloadTracker {
     @Nullable Download download = downloads.get(checkNotNull(mediaItem.playbackProperties).uri);
     if (download != null && download.state != Download.STATE_FAILED) {
       DownloadService.sendRemoveDownload(
-          context, DemoDownloadService.class, download.request.id, /* foreground= */ false);
+          context, EmpDownloadService.class, download.request.id, /* foreground= */ false);
     } else {
       if (startDownloadDialogHelper != null) {
         startDownloadDialogHelper.release();
@@ -346,7 +349,7 @@ public class DownloadTracker {
 
     private void startDownload(DownloadRequest downloadRequest) {
       DownloadService.sendAddDownload(
-          context, DemoDownloadService.class, downloadRequest, /* foreground= */ false);
+          context, EmpDownloadService.class, downloadRequest, /* foreground= */ false);
     }
 
     private DownloadRequest buildDownloadRequest() {

@@ -58,5 +58,7 @@
   <string name="download_ads_unsupported">IMA does not support offline ads</string>
 
   <string name="prefer_extension_decoders">Prefer extension decoders</string>
+    <string name="notification_channel" />
+  <string name="notification_channel_description" />
 
 </resources>
